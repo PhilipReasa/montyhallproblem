@@ -1,48 +1,42 @@
 import random
 
-def runMonteProblem():
-	doors = [1,2,3]
-	winner = random.choice(doors)  #choose our winning door
+def simulateMontyHallProblem():
+	# You start with your choice of three doors
+	doors = {1,2,3}
 
-	selection = random.choice(doors) #choose the door we want
+	# Behind one of them is a fabulous prize
+	winner = random.sample(doors, 1)[0]
 
-	doorsToRemove = doors[:]
-	doorsToRemove.remove(selection)
-	if winner in doorsToRemove:
-		doorsToRemove.remove(winner)
-	remove = random.choice(doorsToRemove) #pick the door to remove
+	# You get to pick which door you think holds this treasure
+	selection = random.sample(doors, 1)[0]
 
-	doors.remove(remove)
-	doors.remove(selection)
-	selectionWithSwitch = random.choice(doors) #choose from the other doors
+	# The host opens one of the other two doors.
+	doorsThatCanBeOpened = doors.copy()
+	doorsThatCanBeOpened.discard(selection) ## not your door
+	doorsThatCanBeOpened.discard(winner)	## the host cannot open the winning door
+	doorToOpen = random.sample(doorsThatCanBeOpened, 1)[0]
+	doors.remove(doorToOpen)
 
+	# The big question: Do you switch doors?
 	correctWithoutSwitch = False
-	correctWithSwitch = False
 	if winner == selection:
 		correctWithoutSwitch = True
 
-	if winner == selectionWithSwitch:
-		correctWithSwitch = True
+	return (correctWithoutSwitch, not correctWithoutSwitch)
 
-	return (correctWithoutSwitch, correctWithSwitch)
-
-count = 0
+# Run the Monty Hall problem 1,000,000 times!
+RUN_COUNT = 1000000
 winsWithSwitch = 0
 winsWithoutSwitch = 0
 
-for index in range(1000000):
-	results = runMonteProblem()
+for index in range(RUN_COUNT):
+	results = simulateMontyHallProblem()
 	if results[0]:
 		winsWithoutSwitch += 1
 
 	if results[1]:
 		winsWithSwitch += 1
 
-	count += 1;
-
-print "iterations %d" % count
+print "iterations %d" % RUN_COUNT
 print "wins with switching %d" % winsWithSwitch
 print "wins without switching %d" % winsWithoutSwitch
-
-
-
